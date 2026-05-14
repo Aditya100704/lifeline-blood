@@ -1000,13 +1000,19 @@ async function updateLiveStats() {
     sb.from('donors').select('*', { count: 'exact', head: true }),
     sb.from('emergency_requests').select('*', { count: 'exact', head: true })
   ]);
-  const livesSaved = Math.max(donorCount || 0, 1) * 3 + (reqCount || 0);
-  document.querySelectorAll('[data-count="2847"]').forEach(el => { el.dataset.count = donorCount || 0; });
-  document.querySelectorAll('[data-count="1293"]').forEach(el => { el.dataset.count = livesSaved; });
-  document.querySelectorAll('[data-count="42"]').forEach(el => {
-    const colleges = new Set(allDonors.map(d => d.college).filter(Boolean));
-    el.dataset.count = Math.max(colleges.size, 1);
-  });
+  const donors = donorCount || 0;
+  const colleges = new Set(allDonors.map(d => d.college).filter(Boolean)).size;
+  const livesSaved = donors * 3 + (reqCount || 0);
+  function setAndAnimate(selector, value) {
+    document.querySelectorAll(selector).forEach(el => {
+      el.dataset.count = value;
+      el.dataset.done = '1';
+      animateCounter(el);
+    });
+  }
+  setAndAnimate('[data-count="2847"]', donors);
+  setAndAnimate('[data-count="1293"]', livesSaved);
+  setAndAnimate('[data-count="42"]', Math.max(colleges, 1));
 }
 
 /* ---------- COUNTERS ---------- */
@@ -1035,9 +1041,6 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.15 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-setTimeout(() => {
-  document.querySelectorAll('.hero [data-count]').forEach(c => { c.dataset.done = '1'; animateCounter(c); });
-}, 800);
 
 /* ---------- EMERGENCY REQUEST FORM ---------- */
 document.getElementById('emergencyForm').addEventListener('submit', async e => {
