@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LifeLine Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0a10;color:#e9eaf0;min-height:100vh}
+:root{
+  --red:#ff2d4d; --red-deep:#c81a36; --red-glow:rgba(255,45,77,.45);
+  --bg:#0a0a10; --bg-2:#12121b; --bg-3:#1a1a26;
+  --line:rgba(255,255,255,.08); --text:#e9eaf0; --muted:#9aa0b4;
+  --green:#22c55e; --amber:#f59e0b; --blue:#3b82f6;
+  --gradient:linear-gradient(135deg,#ff2d4d 0%,#ff6b6b 100%);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:1rem}
+::selection{background:var(--red);color:#fff}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,10,16,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:var(--gradient);display:grid;place-items:center;box-shadow:0 6px 18px var(--red-glow)}
+.brand-mark svg{width:18px;height:18px;color:#fff}
+.brand-tag{font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;background:rgba(255,45,77,.15);color:var(--red);text-transform:uppercase;letter-spacing:.15em;margin-left:6px;border:1px solid rgba(255,45,77,.3)}
+.topbar-right{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.9rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;font-weight:600;font-size:.88rem;transition:all .2s}
+.btn-primary{background:var(--gradient);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--red-glow)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--line);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-danger{background:rgba(255,45,77,.12);border:1px solid rgba(255,45,77,.3);color:var(--red)}
+.btn-danger:hover{background:rgba(255,45,77,.2)}
+.btn-success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--green)}
+.btn-success:hover{background:rgba(34,197,94,.2)}
+.btn-sm{padding:6px 12px;font-size:.8rem;border-radius:8px}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(800px 500px at 50% 30%,rgba(255,45,77,.15),transparent 60%),var(--bg)}
+.login-card{
+  width:min(440px,100%);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--line);border-radius:24px;padding:40px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;overflow:hidden;
+}
+.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient)}
+.login-card h1{font-family:'Space Grotesk';font-size:1.8rem;margin-bottom:6px;letter-spacing:-.02em}
+.login-card p{color:var(--muted);margin-bottom:28px;font-size:.95rem}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.field input{width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:#fff;transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--red)}
+.login-card .btn-primary{width:100%;justify-content:center;padding:14px;margin-top:8px}
+.login-error{background:rgba(255,45,77,.12);border:1px solid rgba(255,45,77,.3);color:var(--red);padding:12px;border-radius:10px;font-size:.88rem;margin-bottom:16px;display:none}
+.login-error.show{display:block}
+
+/* DASHBOARD */
+.dash{padding:28px;max-width:1400px;margin:0 auto;display:none}
+.dash.show{display:block}
+.page-head{margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+.page-head h1{font-family:'Space Grotesk';font-size:2rem;letter-spacing:-.02em}
+.page-head p{color:var(--muted);margin-top:6px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media (max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+.stat-card::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gradient)}
+.stat-card .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+.stat-card .v{font-family:'Space Grotesk';font-size:2.2rem;font-weight:700;margin-top:8px;line-height:1}
+.stat-card .sub{font-size:.82rem;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px}
+.stat-card .sub .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.stat-card.warn::before{background:var(--amber)}
+.stat-card.warn .v{color:var(--amber)}
+
+/* DISTRIBUTION */
+.dist-card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:28px}
+.dist-card h3{font-family:'Space Grotesk';font-size:1.1rem;margin-bottom:18px}
+.dist-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:700px){.dist-bars{grid-template-columns:repeat(2,1fr)}}
+.dist-bar{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:12px;position:relative;overflow:hidden}
+.dist-bar .g{font-family:'Space Grotesk';font-weight:700;font-size:.95rem;color:var(--red)}
+.dist-bar .c{font-family:'Space Grotesk';font-size:1.6rem;font-weight:700;margin-top:4px}
+.dist-bar .fill{position:absolute;bottom:0;left:0;height:3px;background:var(--gradient);transition:width .8s ease}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:0;flex-wrap:wrap}
+.tab{padding:12px 18px;color:var(--muted);font-weight:600;font-size:.92rem;border-bottom:2px solid transparent;transition:all .2s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:#fff}
+.tab.active{color:#fff;border-bottom-color:var(--red)}
+.tab .badge{display:inline-block;background:rgba(255,45,77,.15);color:var(--red);font-size:.7rem;padding:2px 8px;border-radius:100px;margin-left:6px;font-weight:700}
+
+/* TABLE */
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.toolbar input{flex:1;min-width:220px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:#fff}
+.toolbar input:focus{outline:none;border-color:var(--red)}
+.toolbar select{padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:#fff}
+.table-wrap{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:780px}
+th,td{padding:14px 18px;text-align:left;font-size:.88rem;border-bottom:1px solid var(--line)}
+th{background:rgba(255,255,255,.02);font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600;position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.blood-cell{font-family:'Space Grotesk';font-weight:700;display:inline-block;padding:4px 10px;border-radius:6px;background:rgba(255,45,77,.15);color:var(--red);border:1px solid rgba(255,45,77,.3);font-size:.85rem}
+.status-pill{display:inline-block;padding:4px 10px;border-radius:100px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.status-pill.open{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.status-pill.matched{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.status-pill.fulfilled{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.status-pill.closed{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--line)}
+.status-pill.available{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.status-pill.unavailable{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--line)}
+.status-pill.verified{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.status-pill.unverified{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.urg-critical{color:var(--red);font-weight:700}
+.urg-6h{color:var(--amber);font-weight:600}
+.urg-24h{color:var(--muted)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.empty-state{padding:60px 20px;text-align:center;color:var(--muted)}
+
+/* PANEL TOGGLE */
+.panel{display:none}
+.panel.active{display:block}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:#fff;color:#0a0a10;padding:14px 22px;border-radius:12px;font-weight:600;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:200;transition:transform .35s ease;display:flex;align-items:center;gap:10px;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--red);color:#fff}
+
+/* ACTIVITY FEED */
+.feed{display:flex;flex-direction:column;gap:10px}
+.feed-item{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.feed-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;font-size:1.1rem}
+.feed-icon.donor{background:rgba(34,197,94,.15);color:var(--green)}
+.feed-icon.request{background:rgba(255,45,77,.15);color:var(--red)}
+.feed-text{flex:1}
+.feed-text strong{color:#fff}
+.feed-text p{color:var(--muted);font-size:.85rem;margin-top:2px}
+.feed-time{color:var(--muted);font-size:.78rem}
+
+/* LOADING */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <form class="login-card" id="loginForm">
+    <h1>Admin Access</h1>
+    <p>Sign in to manage LifeLine network</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" name="email" required placeholder="your@email.com" autocomplete="email" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+    <p style="text-align:center;margin-top:18px;font-size:.85rem">
+      <a href="index.html" style="color:var(--muted)">← Back to LifeLine</a>
+    </p>
+  </form>
+</div>
+
+<div id="dashWrap" style="display:none">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 8 4 12 4 16a8 8 0 1016 0c0-4-4-8-8-14z"/></svg></span>
+      LifeLine <span class="brand-tag">Admin</span>
+    </div>
+    <div class="topbar-right">
+      <span id="userEmail"></span>
+      <a class="btn btn-ghost btn-sm" href="index.html">View Site</a>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="dash show" id="dash">
+    <div class="page-head">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Manage donors, emergency requests, and the LifeLine network</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="refreshBtn">↻ Refresh</button>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="l">Total Donors</div><div class="v" id="statDonors">—</div><div class="sub"><span class="dot"></span>Across the network</div></div>
+      <div class="stat-card"><div class="l">Available Now</div><div class="v" id="statAvailable">—</div><div class="sub">Ready to donate</div></div>
+      <div class="stat-card warn"><div class="l">Open Requests</div><div class="v" id="statOpen">—</div><div class="sub">Awaiting match</div></div>
+      <div class="stat-card"><div class="l">Total Requests</div><div class="v" id="statRequests">—</div><div class="sub">All-time</div></div>
+    </div>
+
+    <div class="dist-card">
+      <h3>Blood Group Distribution</h3>
+      <div class="dist-bars" id="distBars"></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-panel="donorsPanel">Donors <span class="badge" id="badgeDonors">0</span></button>
+      <button class="tab" data-panel="requestsPanel">Emergency Requests <span class="badge" id="badgeRequests">0</span></button>
+      <button class="tab" data-panel="feedPanel">Live Activity</button>
+    </div>
+
+    <div class="panel active" id="donorsPanel">
+      <div class="toolbar">
+        <input type="search" id="donorSearch" placeholder="Search by name, college, phone..." />
+        <select id="donorGroupFilter">
+          <option value="">All Groups</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+        <select id="donorStatusFilter">
+          <option value="">All Status</option>
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+          <option value="verified">Verified</option>
+          <option value="unverified">Unverified</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('donors')">⬇ Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table id="donorsTable">
+            <thead><tr>
+              <th>Name</th><th>Group</th><th>Phone</th><th>College</th><th>Donations</th><th>Status</th><th>Verified</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="donorsBody"><tr><td colspan="8" class="loader"><span class="spin"></span> Loading donors...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="requestsPanel">
+      <div class="toolbar">
+        <input type="search" id="requestSearch" placeholder="Search by patient, hospital, phone..." />
+        <select id="requestStatusFilter">
+          <option value="">All Status</option>
+          <option value="open">Open</option>
+          <option value="matched">Matched</option>
+          <option value="fulfilled">Fulfilled</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV('requests')">⬇ Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table id="requestsTable">
+            <thead><tr>
+              <th>Patient</th><th>Group</th><th>Hospital</th><th>Units</th><th>Phone</th><th>Urgency</th><th>Status</th><th>Time</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="requestsBody"><tr><td colspan="9" class="loader"><span class="spin"></span> Loading requests...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="feedPanel">
+      <div class="table-wrap" style="padding:18px">
+        <div class="feed" id="feedList"><div class="loader"><span class="spin"></span> Loading activity...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://melqnfeslokxmlcgoqhw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_zxWxT9zSTrp8dXdALZYcBQ_mVCOkTtB';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = sb;
+
+let donors = [];
+let requests = [];
+
+/* ---------- TOAST ---------- */
+function toast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.toggle('error', isError);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+window.toast = toast;
+
+/* ---------- AUTH ---------- */
+async function checkSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    showDashboard(session.user);
+  } else {
+    document.getElementById('loginScreen').style.display = 'grid';
+    document.getElementById('dashWrap').style.display = 'none';
+  }
+}
+
+function showDashboard(user) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashWrap').style.display = 'block';
+  document.getElementById('userEmail').textContent = user.email;
+  loadAll();
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+  err.classList.remove('show');
+  btn.innerHTML = '<span class="spin"></span> Signing in...';
+  btn.disabled = true;
+  const fd = new FormData(e.target);
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: fd.get('email'),
+    password: fd.get('password')
+  });
+  if (error) {
+    err.textContent = error.message;
+    err.classList.add('show');
+    btn.innerHTML = 'Sign In';
+    btn.disabled = false;
+    return;
+  }
+  showDashboard(data.user);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  location.reload();
+});
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.panel).classList.add('active');
+}));
+
+/* ---------- LOAD DATA ---------- */
+async function loadAll() {
+  await Promise.all([loadDonors(), loadRequests()]);
+  updateStats();
+  renderDistribution();
+  renderFeed();
+}
+
+async function loadDonors() {
+  const { data, error } = await sb.from('donors').select('*').order('created_at', { ascending: false });
+  if (error) { toast('Failed to load donors', true); return; }
+  donors = data || [];
+  renderDonors();
+}
+
+async function loadRequests() {
+  const { data, error } = await sb.from('emergency_requests').select('*').order('created_at', { ascending: false });
+  if (error) { toast('Failed to load requests', true); return; }
+  requests = data || [];
+  renderRequests();
+}
+
+/* ---------- STATS ---------- */
+function updateStats() {
+  document.getElementById('statDonors').textContent = donors.length;
+  document.getElementById('statAvailable').textContent = donors.filter(d => d.is_available).length;
+  document.getElementById('statOpen').textContent = requests.filter(r => r.status === 'open').length;
+  document.getElementById('statRequests').textContent = requests.length;
+  document.getElementById('badgeDonors').textContent = donors.length;
+  document.getElementById('badgeRequests').textContent = requests.length;
+}
+
+/* ---------- DISTRIBUTION ---------- */
+function renderDistribution() {
+  const groups = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+  const counts = groups.map(g => donors.filter(d => d.blood_group === g).length);
+  const max = Math.max(...counts, 1);
+  document.getElementById('distBars').innerHTML = groups.map((g, i) => `
+    <div class="dist-bar">
+      <div class="g">${g}</div>
+      <div class="c">${counts[i]}</div>
+      <div class="fill" style="width:${(counts[i]/max)*100}%"></div>
+    </div>`).join('');
+}
+
+/* ---------- DONORS TABLE ---------- */
+function renderDonors() {
+  const q = document.getElementById('donorSearch').value.toLowerCase();
+  const g = document.getElementById('donorGroupFilter').value;
+  const s = document.getElementById('donorStatusFilter').value;
+  let list = donors;
+  if (q) list = list.filter(d =>
+    (d.name||'').toLowerCase().includes(q) ||
+    (d.college||'').toLowerCase().includes(q) ||
+    (d.phone||'').includes(q));
+  if (g) list = list.filter(d => d.blood_group === g);
+  if (s === 'available') list = list.filter(d => d.is_available);
+  if (s === 'unavailable') list = list.filter(d => !d.is_available);
+  if (s === 'verified') list = list.filter(d => d.is_verified);
+  if (s === 'unverified') list = list.filter(d => !d.is_verified);
+
+  const body = document.getElementById('donorsBody');
+  if (list.length === 0) { body.innerHTML = '<tr><td colspan="8" class="empty-state">No donors match these filters.</td></tr>'; return; }
+  body.innerHTML = list.map(d => `
+    <tr data-id="${d.id}">
+      <td><strong>${escapeHTML(d.name)}</strong></td>
+      <td><span class="blood-cell">${d.blood_group}</span></td>
+      <td><a href="tel:${d.phone}" style="color:var(--muted)">${d.phone}</a></td>
+      <td>${escapeHTML(d.college || '—')}</td>
+      <td>${d.donations_count || 0}</td>
+      <td><span class="status-pill ${d.is_available?'available':'unavailable'}">${d.is_available?'Available':'Off'}</span></td>
+      <td><span class="status-pill ${d.is_verified?'verified':'unverified'}">${d.is_verified?'Verified':'Pending'}</span></td>
+      <td class="actions">
+        <button class="btn ${d.is_verified?'btn-ghost':'btn-success'} btn-sm" onclick="toggleVerify('${d.id}', ${!d.is_verified})">${d.is_verified?'Unverify':'Verify'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleAvail('${d.id}', ${!d.is_available})">${d.is_available?'Pause':'Activate'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteDonor('${d.id}', '${escapeAttr(d.name)}')">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+window.toggleVerify = async (id, val) => {
+  const { error } = await sb.from('donors').update({ is_verified: val }).eq('id', id);
+  if (error) return toast(error.message, true);
+  toast(val ? 'Donor verified' : 'Donor unverified');
+  await loadDonors(); updateStats();
+};
+window.toggleAvail = async (id, val) => {
+  const { error } = await sb.from('donors').update({ is_available: val }).eq('id', id);
+  if (error) return toast(error.message, true);
+  toast(val ? 'Donor activated' : 'Donor paused');
+  await loadDonors(); updateStats();
+};
+window.deleteDonor = async (id, name) => {
+  if (!confirm(`Delete donor "${name}"? This cannot be undone.`)) return;
+  const { error } = await sb.from('donors').delete().eq('id', id);
+  if (error) return toast(error.message, true);
+  toast('Donor deleted');
+  await loadDonors(); updateStats(); renderDistribution();
+};
+
+['donorSearch','donorGroupFilter','donorStatusFilter'].forEach(id =>
+  document.getElementById(id).addEventListener('input', renderDonors));
+
+/* ---------- REQUESTS TABLE ---------- */
+function renderRequests() {
+  const q = document.getElementById('requestSearch').value.toLowerCase();
+  const s = document.getElementById('requestStatusFilter').value;
+  let list = requests;
+  if (q) list = list.filter(r =>
+    (r.patient_name||'').toLowerCase().includes(q) ||
+    (r.hospital||'').toLowerCase().includes(q) ||
+    (r.contact_phone||'').includes(q));
+  if (s) list = list.filter(r => r.status === s);
+  const body = document.getElementById('requestsBody');
+  if (list.length === 0) { body.innerHTML = '<tr><td colspan="9" class="empty-state">No emergency requests yet. The site is calm.</td></tr>'; return; }
+  body.innerHTML = list.map(r => `
+    <tr data-id="${r.id}">
+      <td><strong>${escapeHTML(r.patient_name)}</strong></td>
+      <td><span class="blood-cell">${r.blood_group}</span></td>
+      <td>${escapeHTML(r.hospital)}</td>
+      <td>${r.units_required}</td>
+      <td><a href="tel:${r.contact_phone}" style="color:var(--muted)">${r.contact_phone}</a></td>
+      <td class="urg-${r.urgency}">${formatUrgency(r.urgency)}</td>
+      <td><span class="status-pill ${r.status}">${r.status}</span></td>
+      <td style="color:var(--muted);font-size:.82rem">${timeAgo(r.created_at)}</td>
+      <td class="actions">
+        ${r.status !== 'matched' ? `<button class="btn btn-ghost btn-sm" onclick="setRequestStatus('${r.id}','matched')">Match</button>` : ''}
+        ${r.status !== 'fulfilled' ? `<button class="btn btn-success btn-sm" onclick="setRequestStatus('${r.id}','fulfilled')">Fulfilled</button>` : ''}
+        ${r.status !== 'closed' ? `<button class="btn btn-ghost btn-sm" onclick="setRequestStatus('${r.id}','closed')">Close</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteRequest('${r.id}', '${escapeAttr(r.patient_name)}')">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+function formatUrgency(u) { return u === 'critical' ? '🚨 Critical' : u === '6h' ? 'Within 6h' : 'Within 24h'; }
+
+window.setRequestStatus = async (id, status) => {
+  const { error } = await sb.from('emergency_requests').update({ status }).eq('id', id);
+  if (error) return toast(error.message, true);
+  toast('Request marked as ' + status);
+  await loadRequests(); updateStats();
+};
+window.deleteRequest = async (id, name) => {
+  if (!confirm(`Delete request for "${name}"? This cannot be undone.`)) return;
+  const { error } = await sb.from('emergency_requests').delete().eq('id', id);
+  if (error) return toast(error.message, true);
+  toast('Request deleted');
+  await loadRequests(); updateStats();
+};
+
+['requestSearch','requestStatusFilter'].forEach(id =>
+  document.getElementById(id).addEventListener('input', renderRequests));
+
+/* ---------- ACTIVITY FEED ---------- */
+function renderFeed() {
+  const events = [
+    ...donors.map(d => ({ type: 'donor', name: d.name, info: `${d.blood_group} · ${d.college||'Campus'}`, ts: d.created_at })),
+    ...requests.map(r => ({ type: 'request', name: r.patient_name, info: `${r.blood_group} needed at ${r.hospital}`, ts: r.created_at }))
+  ].sort((a,b) => new Date(b.ts) - new Date(a.ts)).slice(0, 30);
+  if (events.length === 0) { document.getElementById('feedList').innerHTML = '<div class="empty-state">No activity yet.</div>'; return; }
+  document.getElementById('feedList').innerHTML = events.map(e => `
+    <div class="feed-item">
+      <div class="feed-icon ${e.type}">${e.type === 'donor' ? '🩸' : '🚨'}</div>
+      <div class="feed-text">
+        <strong>${escapeHTML(e.name)}</strong> ${e.type === 'donor' ? 'joined as a donor' : 'submitted an emergency request'}
+        <p>${escapeHTML(e.info)}</p>
+      </div>
+      <div class="feed-time">${timeAgo(e.ts)}</div>
+    </div>`).join('');
+}
+
+/* ---------- UTILS ---------- */
+function timeAgo(iso) {
+  const d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (d < 60) return 'just now';
+  if (d < 3600) return Math.floor(d/60) + 'm ago';
+  if (d < 86400) return Math.floor(d/3600) + 'h ago';
+  return Math.floor(d/86400) + 'd ago';
+}
+function escapeHTML(s) { return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s) { return (s||'').toString().replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+/* ---------- CSV EXPORT ---------- */
+window.exportCSV = (which) => {
+  const rows = which === 'donors' ? donors : requests;
+  if (rows.length === 0) return toast('Nothing to export', true);
+  const headers = Object.keys(rows[0]);
+  const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => {
+    const v = r[h]; if (v == null) return '';
+    const s = String(v).replace(/"/g, '""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }).join(','))).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `lifeline-${which}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('CSV downloaded');
+};
+
+document.getElementById('refreshBtn').addEventListener('click', loadAll);
+
+/* ---------- REALTIME ---------- */
+sb.channel('admin-live')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'donors' }, () => loadDonors().then(() => { updateStats(); renderDistribution(); renderFeed(); }))
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'emergency_requests' }, () => loadRequests().then(() => { updateStats(); renderFeed(); }))
+  .subscribe();
+
+checkSession();
+</script>
+</body>
+</html>
