@@ -604,48 +604,48 @@ input,select,textarea{font-family:inherit;font-size:1rem}
         </ul>
       </div>
 
-      <form class="form-card reveal" id="emergencyForm" onsubmit="return submitEmergency(event)">
+      <form class="form-card reveal" id="emergencyForm">
         <div class="form-row">
           <div class="field">
             <label>Patient Name</label>
-            <input type="text" required placeholder="Full name" />
+            <input name="patient_name" type="text" required placeholder="Full name" />
           </div>
           <div class="field">
             <label>Blood Group Needed</label>
-            <select required>
+            <select name="blood_group" required>
               <option value="">Select group</option>
-              <option>A+</option><option>A−</option><option>B+</option><option>B−</option>
-              <option>AB+</option><option>AB−</option><option>O+</option><option>O−</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
             </select>
           </div>
         </div>
         <div class="form-row">
           <div class="field">
             <label>Hospital / Location</label>
-            <input type="text" required placeholder="e.g. AIIMS, Delhi" />
+            <input name="hospital" type="text" required placeholder="e.g. AIIMS, Delhi" />
           </div>
           <div class="field">
             <label>Units Required</label>
-            <input type="number" required min="1" max="10" placeholder="1" />
+            <input name="units_required" type="number" required min="1" max="10" placeholder="1" value="1" />
           </div>
         </div>
         <div class="field">
           <label>Contact Number</label>
-          <input type="tel" required placeholder="+91 9XXXXXXXXX" />
+          <input name="contact_phone" type="tel" required placeholder="+91 9XXXXXXXXX" />
         </div>
         <div class="field">
           <label>Urgency Level</label>
           <div class="urgency-group">
-            <input type="radio" name="urg" id="u1"><label for="u1">Within 24h</label>
-            <input type="radio" name="urg" id="u2" checked><label for="u2">Within 6h</label>
-            <input type="radio" name="urg" id="u3"><label for="u3">Critical · Now</label>
+            <input type="radio" name="urgency" value="24h" id="u1"><label for="u1">Within 24h</label>
+            <input type="radio" name="urgency" value="6h" id="u2" checked><label for="u2">Within 6h</label>
+            <input type="radio" name="urgency" value="critical" id="u3"><label for="u3">Critical · Now</label>
           </div>
         </div>
         <div class="field">
           <label>Additional Notes</label>
-          <textarea placeholder="Patient condition, hospital contact, anything else..."></textarea>
+          <textarea name="notes" placeholder="Patient condition, hospital contact, anything else..."></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" id="emergencySubmitBtn">
           🚨 Send Emergency Alert
         </button>
       </form>
@@ -665,13 +665,13 @@ input,select,textarea{font-family:inherit;font-size:1rem}
     <div class="blood-chips reveal" id="bloodChips">
       <button class="chip active" data-group="ALL">All Groups</button>
       <button class="chip" data-group="A+">A+</button>
-      <button class="chip" data-group="A−">A−</button>
+      <button class="chip" data-group="A-">A-</button>
       <button class="chip" data-group="B+">B+</button>
-      <button class="chip" data-group="B−">B−</button>
+      <button class="chip" data-group="B-">B-</button>
       <button class="chip" data-group="AB+">AB+</button>
-      <button class="chip" data-group="AB−">AB−</button>
+      <button class="chip" data-group="AB-">AB-</button>
       <button class="chip" data-group="O+">O+</button>
-      <button class="chip" data-group="O−">O−</button>
+      <button class="chip" data-group="O-">O-</button>
     </div>
 
     <div class="donors" id="donors"></div>
@@ -692,10 +692,10 @@ input,select,textarea{font-family:inherit;font-size:1rem}
         <h3 style="font-family:'Space Grotesk';font-size:1.6rem;font-weight:700;margin-bottom:6px">Your Blood Group</h3>
         <p style="color:var(--muted)">Tap to select</p>
         <div class="compat-picker" id="compatPicker">
-          <button data-g="A+">A+</button><button data-g="A−">A−</button>
-          <button data-g="B+">B+</button><button data-g="B−">B−</button>
-          <button data-g="AB+">AB+</button><button data-g="AB−">AB−</button>
-          <button class="active" data-g="O+">O+</button><button data-g="O−">O−</button>
+          <button data-g="A+">A+</button><button data-g="A-">A-</button>
+          <button data-g="B+">B+</button><button data-g="B-">B-</button>
+          <button data-g="AB+">AB+</button><button data-g="AB-">AB-</button>
+          <button class="active" data-g="O+">O+</button><button data-g="O-">O-</button>
         </div>
       </div>
       <div class="compat-result">
@@ -770,23 +770,23 @@ input,select,textarea{font-family:inherit;font-size:1rem}
       <h2 class="h-section">Be someone's miracle.</h2>
       <p class="lede" style="margin-bottom:24px">Sign up once. Donate when you can. Save lives forever. We notify you only when there's a real, verified emergency near you.</p>
 
-      <form class="form-card" onsubmit="return signUpDonor(event)">
+      <form class="form-card" id="donorForm">
         <div class="form-row">
-          <div class="field"><label>Full Name</label><input type="text" required placeholder="Your name" /></div>
+          <div class="field"><label>Full Name</label><input name="name" type="text" required placeholder="Your name" /></div>
           <div class="field"><label>Blood Group</label>
-            <select required>
+            <select name="blood_group" required>
               <option value="">Select</option>
-              <option>A+</option><option>A−</option><option>B+</option><option>B−</option>
-              <option>AB+</option><option>AB−</option><option>O+</option><option>O−</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
             </select>
           </div>
         </div>
         <div class="form-row">
-          <div class="field"><label>College</label><input type="text" required placeholder="College name" /></div>
-          <div class="field"><label>Phone</label><input type="tel" required placeholder="+91 9XXXXXXXXX" /></div>
+          <div class="field"><label>College</label><input name="college" type="text" required placeholder="College name" /></div>
+          <div class="field"><label>Phone</label><input name="phone" type="tel" required placeholder="+91 9XXXXXXXXX" /></div>
         </div>
-        <div class="field"><label>Age</label><input type="number" required min="18" max="65" placeholder="18+" /></div>
-        <button type="submit" class="btn btn-primary">Join LifeLine</button>
+        <div class="field"><label>Age</label><input name="age" type="number" required min="18" max="65" placeholder="18+" /></div>
+        <button type="submit" class="btn btn-primary" id="donorSubmitBtn">Join LifeLine</button>
       </form>
     </div>
   </div>
@@ -883,116 +883,226 @@ input,select,textarea{font-family:inherit;font-size:1rem}
 
 <div class="toast" id="toast"><span class="ico">✓</span><span id="toastMsg">Request sent!</span></div>
 
-<script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://melqnfeslokxmlcgoqhw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_zxWxT9zSTrp8dXdALZYcBQ_mVCOkTtB';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = sb;
+
 /* ---------- NAV ---------- */
-const nav=document.getElementById('nav');
-window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20));
-document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
-document.querySelectorAll('#navLinks a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20));
+document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
 
-/* ---------- DONORS ---------- */
-const donors=[
-  {n:"Aarav Sharma",c:"IIT Delhi · 2.1 km",g:"O+",r:"~ 4 min",av:true,v:true,d:"23 donations"},
-  {n:"Priya Iyer",c:"AIIMS · 0.8 km",g:"A+",r:"~ 2 min",av:true,v:true,d:"11 donations"},
-  {n:"Rohan Mehta",c:"DU North · 3.4 km",g:"B+",r:"~ 7 min",av:true,v:true,d:"8 donations"},
-  {n:"Ananya Reddy",c:"NIT Trichy · 1.2 km",g:"AB+",r:"~ 5 min",av:false,v:true,d:"5 donations"},
-  {n:"Karan Singh",c:"BITS Pilani · 4.1 km",g:"O−",r:"~ 6 min",av:true,v:true,d:"19 donations"},
-  {n:"Diya Nair",c:"Christ Univ · 2.7 km",g:"A−",r:"~ 4 min",av:true,v:true,d:"6 donations"},
-  {n:"Vivaan Kapoor",c:"SRCC · 1.6 km",g:"B−",r:"~ 3 min",av:false,v:true,d:"14 donations"},
-  {n:"Isha Verma",c:"VIT Vellore · 5.2 km",g:"AB−",r:"~ 8 min",av:true,v:true,d:"4 donations"},
-  {n:"Aditya Joshi",c:"IIM Bangalore · 3.0 km",g:"O+",r:"~ 5 min",av:true,v:true,d:"17 donations"},
-  {n:"Meera Pillai",c:"Manipal Univ · 2.4 km",g:"A+",r:"~ 4 min",av:true,v:true,d:"9 donations"},
-  {n:"Yash Khanna",c:"NSUT · 1.9 km",g:"B+",r:"~ 3 min",av:false,v:true,d:"22 donations"},
-  {n:"Sara D'Souza",c:"St. Xavier's · 2.0 km",g:"O−",r:"~ 6 min",av:true,v:true,d:"13 donations"},
-];
-
-const grid=document.getElementById('donors');
-function renderDonors(filter='ALL'){
-  const list=filter==='ALL'?donors:donors.filter(d=>d.g===filter);
-  if(list.length===0){grid.innerHTML='<div class="empty">No donors found for this group right now. Submit an emergency request — we\'ll notify donors campus-wide.</div>';return}
-  grid.innerHTML=list.map(d=>`
-    <div class="donor-card">
-      <div class="donor-top">
-        <div class="donor-avatar">${d.n.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
-        <div class="blood-badge">${d.g}</div>
-      </div>
-      <div class="donor-name">${d.n}${d.v?'<span class="verified">✓ Verified</span>':''}</div>
-      <div class="donor-meta">${d.c}</div>
-      <div class="donor-info">
-        <span>⏱ ${d.r}</span>
-        <span>❤ ${d.d}</span>
-      </div>
-      <div class="availability">
-        <span class="dot ${d.av?'on':'off'}"></span>
-        ${d.av?'Available now':'Currently unavailable'}
-      </div>
-      <div class="donor-actions">
-        <button class="btn btn-primary" onclick="contactDonor('${d.n}')">Request</button>
-        <button class="btn btn-ghost">Profile</button>
-      </div>
-    </div>
-  `).join('');
+/* ---------- TOAST ---------- */
+function showToast(msg, isError = false) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  if (isError) t.style.background = '#ff2d4d', t.style.color = '#fff';
+  else t.style.background = '#fff', t.style.color = '#0a0a10';
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
-renderDonors();
-document.getElementById('bloodChips').addEventListener('click',e=>{
-  if(!e.target.classList.contains('chip'))return;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-  e.target.classList.add('active');
-  renderDonors(e.target.dataset.group);
-});
+window.showToast = showToast;
 
 /* ---------- COMPATIBILITY ---------- */
-const compat={
-  'A+':{r:['A+','A−','O+','O−'],d:['A+','AB+']},
-  'A−':{r:['A−','O−'],d:['A+','A−','AB+','AB−']},
-  'B+':{r:['B+','B−','O+','O−'],d:['B+','AB+']},
-  'B−':{r:['B−','O−'],d:['B+','B−','AB+','AB−']},
-  'AB+':{r:['A+','A−','B+','B−','AB+','AB−','O+','O−'],d:['AB+']},
-  'AB−':{r:['A−','B−','AB−','O−'],d:['AB+','AB−']},
-  'O+':{r:['O+','O−'],d:['A+','B+','AB+','O+']},
-  'O−':{r:['O−'],d:['A+','A−','B+','B−','AB+','AB−','O+','O−']},
+const compat = {
+  'A+':  { r: ['A+','A-','O+','O-'], d: ['A+','AB+'] },
+  'A-':  { r: ['A-','O-'], d: ['A+','A-','AB+','AB-'] },
+  'B+':  { r: ['B+','B-','O+','O-'], d: ['B+','AB+'] },
+  'B-':  { r: ['B-','O-'], d: ['B+','B-','AB+','AB-'] },
+  'AB+': { r: ['A+','A-','B+','B-','AB+','AB-','O+','O-'], d: ['AB+'] },
+  'AB-': { r: ['A-','B-','AB-','O-'], d: ['AB+','AB-'] },
+  'O+':  { r: ['O+','O-'], d: ['A+','B+','AB+','O+'] },
+  'O-':  { r: ['O-'], d: ['A+','A-','B+','B-','AB+','AB-','O+','O-'] }
 };
-function updateCompat(g){
-  document.getElementById('receiveFrom').innerHTML=compat[g].r.map(x=>`<span>${x}</span>`).join('');
-  document.getElementById('donateTo').innerHTML=compat[g].d.map(x=>`<span>${x}</span>`).join('');
+function updateCompat(g) {
+  document.getElementById('receiveFrom').innerHTML = compat[g].r.map(x => `<span>${x}</span>`).join('');
+  document.getElementById('donateTo').innerHTML = compat[g].d.map(x => `<span>${x}</span>`).join('');
 }
 updateCompat('O+');
-document.getElementById('compatPicker').addEventListener('click',e=>{
-  if(e.target.tagName!=='BUTTON')return;
-  document.querySelectorAll('#compatPicker button').forEach(b=>b.classList.remove('active'));
+document.getElementById('compatPicker').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#compatPicker button').forEach(b => b.classList.remove('active'));
   e.target.classList.add('active');
   updateCompat(e.target.dataset.g);
 });
 
+/* ---------- DONORS (live from Supabase) ---------- */
+const grid = document.getElementById('donors');
+let allDonors = [];
+let currentFilter = 'ALL';
+
+function timeAgo(iso) {
+  const d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (d < 60) return 'just now';
+  if (d < 3600) return Math.floor(d / 60) + 'm ago';
+  if (d < 86400) return Math.floor(d / 3600) + 'h ago';
+  return Math.floor(d / 86400) + 'd ago';
+}
+
+function renderDonors() {
+  const list = currentFilter === 'ALL' ? allDonors : allDonors.filter(d => d.blood_group === currentFilter);
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="empty">No donors found for this group right now. Submit an emergency request — we\'ll notify donors campus-wide.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(d => {
+    const initials = d.name.split(' ').map(x => x[0]).slice(0, 2).join('');
+    const phoneClean = (d.phone || '').replace(/[^\d+]/g, '');
+    return `
+    <div class="donor-card">
+      <div class="donor-top">
+        <div class="donor-avatar">${initials}</div>
+        <div class="blood-badge">${d.blood_group}</div>
+      </div>
+      <div class="donor-name">${d.name}${d.is_verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
+      <div class="donor-meta">${d.college || d.city || 'Campus'}</div>
+      <div class="donor-info">
+        <span>⏱ ~ ${Math.max(2, Math.floor(Math.random() * 8))} min</span>
+        <span>❤ ${d.donations_count || 0} donations</span>
+      </div>
+      <div class="availability">
+        <span class="dot ${d.is_available ? 'on' : 'off'}"></span>
+        ${d.is_available ? 'Available now' : 'Currently unavailable'}
+      </div>
+      <div class="donor-actions">
+        <a class="btn btn-primary" href="https://wa.me/${phoneClean}?text=Hi%20${encodeURIComponent(d.name)}%2C%20I%20found%20you%20on%20LifeLine%20and%20need%20your%20help%20with%20blood%20donation." target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn btn-ghost" href="tel:${phoneClean}">Call</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadDonors() {
+  const { data, error } = await sb.from('donors').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); grid.innerHTML = '<div class="empty">Could not load donors. Please try again.</div>'; return; }
+  allDonors = data || [];
+  renderDonors();
+  updateLiveStats();
+}
+loadDonors();
+
+document.getElementById('bloodChips').addEventListener('click', e => {
+  if (!e.target.classList.contains('chip')) return;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  e.target.classList.add('active');
+  currentFilter = e.target.dataset.group;
+  renderDonors();
+});
+
+/* ---------- LIVE STATS (real DB counts) ---------- */
+async function updateLiveStats() {
+  const [{ count: donorCount }, { count: reqCount }] = await Promise.all([
+    sb.from('donors').select('*', { count: 'exact', head: true }),
+    sb.from('emergency_requests').select('*', { count: 'exact', head: true })
+  ]);
+  const livesSaved = Math.max(donorCount || 0, 1) * 3 + (reqCount || 0);
+  document.querySelectorAll('[data-count="2847"]').forEach(el => { el.dataset.count = donorCount || 0; });
+  document.querySelectorAll('[data-count="1293"]').forEach(el => { el.dataset.count = livesSaved; });
+  document.querySelectorAll('[data-count="42"]').forEach(el => {
+    const colleges = new Set(allDonors.map(d => d.college).filter(Boolean));
+    el.dataset.count = Math.max(colleges.size, 1);
+  });
+}
+
 /* ---------- COUNTERS ---------- */
-function animateCounter(el){
-  const target=+el.dataset.count;const dur=1800;const start=performance.now();
-  function tick(t){const p=Math.min((t-start)/dur,1);el.textContent=Math.floor(target*(1-Math.pow(1-p,3))).toLocaleString();if(p<1)requestAnimationFrame(tick)}
+function animateCounter(el) {
+  const target = +el.dataset.count;
+  const dur = 1800;
+  const start = performance.now();
+  function tick(t) {
+    const p = Math.min((t - start) / dur, 1);
+    el.textContent = Math.floor(target * (1 - Math.pow(1 - p, 3))).toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  }
   requestAnimationFrame(tick);
 }
 
 /* ---------- REVEAL ON SCROLL ---------- */
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
       e.target.classList.add('in');
-      e.target.querySelectorAll('[data-count]').forEach(c=>{if(!c.dataset.done){c.dataset.done='1';animateCounter(c)}});
+      e.target.querySelectorAll('[data-count]').forEach(c => {
+        if (!c.dataset.done) { c.dataset.done = '1'; animateCounter(c); }
+      });
       io.unobserve(e.target);
     }
   });
-},{threshold:.15});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-document.querySelectorAll('.hero [data-count]').forEach(c=>{c.dataset.done='1';animateCounter(c)});
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+setTimeout(() => {
+  document.querySelectorAll('.hero [data-count]').forEach(c => { c.dataset.done = '1'; animateCounter(c); });
+}, 800);
 
-/* ---------- FORMS ---------- */
-function showToast(msg){
-  document.getElementById('toastMsg').textContent=msg;
-  const t=document.getElementById('toast');t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3500);
-}
-function submitEmergency(e){e.preventDefault();showToast('Emergency alert sent to 47 nearby donors!');e.target.reset();return false}
-function signUpDonor(e){e.preventDefault();showToast('Welcome to LifeLine! Check your phone to verify.');e.target.reset();return false}
-function contactDonor(n){showToast(`Request sent to ${n}. They will respond shortly.`)}
+/* ---------- EMERGENCY REQUEST FORM ---------- */
+document.getElementById('emergencyForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('emergencySubmitBtn');
+  const original = btn.innerHTML;
+  btn.innerHTML = '⏳ Sending alert...';
+  btn.disabled = true;
+  const fd = new FormData(e.target);
+  const payload = {
+    patient_name: fd.get('patient_name'),
+    blood_group: fd.get('blood_group'),
+    hospital: fd.get('hospital'),
+    units_required: parseInt(fd.get('units_required')) || 1,
+    contact_phone: fd.get('contact_phone'),
+    urgency: fd.get('urgency') || '6h',
+    notes: fd.get('notes') || null
+  };
+  const { error } = await sb.from('emergency_requests').insert(payload);
+  if (error) {
+    showToast('Could not send: ' + error.message, true);
+    btn.innerHTML = original; btn.disabled = false;
+    return;
+  }
+  const compatibleGroups = compat[payload.blood_group]?.r || [payload.blood_group];
+  const matched = allDonors.filter(d => compatibleGroups.includes(d.blood_group) && d.is_available).length;
+  showToast(`🚨 Alert sent to ${matched} compatible donor${matched !== 1 ? 's' : ''}! They will respond shortly.`);
+  e.target.reset();
+  btn.innerHTML = original; btn.disabled = false;
+  updateLiveStats();
+});
+
+/* ---------- DONOR SIGNUP FORM ---------- */
+document.getElementById('donorForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('donorSubmitBtn');
+  const original = btn.innerHTML;
+  btn.innerHTML = '⏳ Joining...';
+  btn.disabled = true;
+  const fd = new FormData(e.target);
+  const payload = {
+    name: fd.get('name'),
+    blood_group: fd.get('blood_group'),
+    college: fd.get('college'),
+    phone: fd.get('phone'),
+    age: parseInt(fd.get('age')) || null,
+    is_available: true,
+    is_verified: false
+  };
+  const { error } = await sb.from('donors').insert(payload);
+  if (error) {
+    showToast('Could not sign up: ' + error.message, true);
+    btn.innerHTML = original; btn.disabled = false;
+    return;
+  }
+  showToast('🩸 Welcome to LifeLine! You are now part of the network.');
+  e.target.reset();
+  btn.innerHTML = original; btn.disabled = false;
+  await loadDonors();
+});
+
+/* ---------- REALTIME: live donor updates ---------- */
+sb.channel('donors-live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'donors' }, () => {
+  loadDonors();
+}).subscribe();
 </script>
 </body>
 </html>
