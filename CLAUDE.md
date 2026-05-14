@@ -18,7 +18,9 @@
   - Dashboard: https://supabase.com/dashboard/project/melqnfeslokxmlcgoqhw
   - Publishable key (safe in client): `sb_publishable_zxWxT9zSTrp8dXdALZYcBQ_mVCOkTtB`
   - DB password is in the owner's password manager (not stored here).
-- **Tables:** `donors`, `emergency_requests`, `donation_responses` — RLS enabled, public read+insert policies, no public update/delete.
+- **Tables:** `donors`, `emergency_requests`, `donation_responses` — RLS enabled. Public can SELECT + INSERT. Only authenticated users can UPDATE + DELETE.
+- **Admin login:** email `aditya100704@gmail.com`, password `LifeLineAdmin#2026` (created in Supabase Auth dashboard, owner can rotate via Supabase UI any time).
+- **Admin URL:** https://aditya100704.github.io/lifeline-blood/admin.html
 
 ---
 
@@ -26,7 +28,8 @@
 
 | File | Role |
 |---|---|
-| `index.html` | Entire website — markup, styles, and scripts all in one file |
+| `index.html` | Public website — markup, styles, and scripts all in one file |
+| `admin.html` | Admin dashboard (auth-gated) — view/edit/delete donors & requests, stats, CSV export, live activity feed |
 | `CLAUDE.md` | This file. Project memory + self-improvement log |
 | `README.md` | Public-facing project description for GitHub |
 
@@ -59,6 +62,17 @@ If new files get added, Claude must update this table.
 - Find-a-donor section → fetches real donors from DB, filter chips work
 - Donor cards show WhatsApp button (deep-links to `wa.me`) + Call button (`tel:` link)
 - Live counters in hero & impact section pull real `count(*)` from DB
+
+**Admin Dashboard (verified by E2E test 2026-05-14)**
+- Supabase Auth email/password login gates the page
+- Stats: total donors, available now, open requests, total requests
+- Blood group distribution bar chart (live from DB)
+- Donors table: search by name/college/phone, filter by group/availability/verified, sort by created date
+- Per-donor actions: Verify/Unverify, Pause/Activate, Delete (all hit DB with proper RLS)
+- Emergency requests table: search, filter by status, mark Matched/Fulfilled/Closed, delete
+- Live activity feed: latest 30 events from both tables, real-time updates via Supabase channels
+- CSV export for both donors and requests
+- All writes verified end-to-end — auth + RLS round-trip confirmed working
 
 ---
 
@@ -102,6 +116,9 @@ Ordered by what would improve the product most:
 | 2026-05-14 | Public INSERT policy on `emergency_requests` and `donors` | MVP needs zero-friction signup; trade-off is spam vulnerability. Documented in backlog item #7 |
 | 2026-05-14 | Replaced en-dash (−) with hyphen (-) for blood groups | DB stored hyphens; keeping both formats would require normalization on every query |
 | 2026-05-14 | WhatsApp + Call buttons on donor cards instead of generic "Request" | India context — WhatsApp is the default messenger. Direct deep links are faster than a chat system that needs auth |
+| 2026-05-14 | Admin auth = Supabase Auth email/password, not magic links or OTP | Magic links require email delivery setup; password is simpler for a single-admin demo. Easy to swap later if multi-admin needed |
+| 2026-05-14 | Public still has INSERT, only auth'd users get UPDATE/DELETE | Lets the public site work without any login for normal use; only the admin who actually moderates needs an account |
+| 2026-05-14 | Admin link tucked in footer with low opacity | Discoverable for admin but not advertised to casual visitors |
 
 ---
 
@@ -136,6 +153,7 @@ Every Claude session MUST follow this loop:
 |---|---|
 | 2026-05-14 | Initial build — full single-file site shipped. CLAUDE.md created. GitHub Pages deploy initiated. |
 | 2026-05-14 | Backend wired: Supabase project provisioned, 3 tables + RLS policies + seed data, frontend rewritten to use live DB, realtime donor updates, WhatsApp/Call deep links on cards. E2E tested live — emergency insert + donor signup both verified end-to-end. |
+| 2026-05-14 | Admin dashboard shipped: `admin.html` with Supabase Auth login, stats overview, blood group distribution, full CRUD on donors and requests, search + filters, CSV export, live activity feed. RLS updated to require authentication for UPDATE/DELETE. E2E tested — all admin writes confirmed hitting DB. |
 
 ---
 
