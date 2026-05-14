@@ -9,9 +9,16 @@
 - **Name:** LifeLine — Digital Blood Donor & Emergency Help Network
 - **Owner:** Aditya (aditya100704@gmail.com)
 - **Purpose:** College/campus emergency platform that connects verified student blood donors with people who need blood urgently. Built for a college project on the problem statement: *"Digital Blood Donor & Emergency Help Network (S/W)"*.
-- **Stack right now:** Single-file static website (`index.html`) — pure HTML/CSS/JS, no backend yet.
-- **Live URL:** _to be filled after deployment_
-- **Repo:** _to be filled after GitHub push_
+- **Stack right now:** Single-file static frontend (`index.html`) + Supabase backend (Postgres + REST API + Realtime).
+- **Live URL:** https://aditya100704.github.io/lifeline-blood/
+- **Repo:** https://github.com/Aditya100704/lifeline-blood
+- **Backend (Supabase):**
+  - Project URL: `https://melqnfeslokxmlcgoqhw.supabase.co`
+  - Project ID: `melqnfeslokxmlcgoqhw`
+  - Dashboard: https://supabase.com/dashboard/project/melqnfeslokxmlcgoqhw
+  - Publishable key (safe in client): `sb_publishable_zxWxT9zSTrp8dXdALZYcBQ_mVCOkTtB`
+  - DB password is in the owner's password manager (not stored here).
+- **Tables:** `donors`, `emergency_requests`, `donation_responses` — RLS enabled, public read+insert policies, no public update/delete.
 
 ---
 
@@ -29,16 +36,29 @@ If new files get added, Claude must update this table.
 
 ## 3. What's Done
 
+**Frontend**
 - Sticky glass navbar with pulsing emergency button
 - Hero with animated heartbeat card, floating blood drops, live counters
-- Emergency request form (front-end only — submissions show a toast, do not persist)
-- Find-a-donor section with 12 dummy donors, blood-group filter chips, verified badges
 - Interactive blood compatibility tool (all 8 groups mapped correctly)
 - How-it-works 3-step section
-- Animated impact stats
-- Become-a-donor form (front-end only)
+- Animated impact stats (real DB counts)
 - Testimonials, FAQ accordion, footer with hotline
 - Fully responsive (phone, tablet, laptop)
+- Hosted free on GitHub Pages, auto-deploys on push to `main`
+
+**Backend (Supabase)**
+- Three tables live: `donors`, `emergency_requests`, `donation_responses`
+- Row Level Security enabled on every table
+- Public read + insert policies (no anonymous update/delete possible)
+- 12 seed donors inserted across all 8 blood groups
+- Realtime subscription on `donors` table — page updates without refresh when a new donor joins
+
+**Wired End-to-End (verified by E2E test 2026-05-14)**
+- Emergency request form → inserts into `emergency_requests`, success toast tells requester how many compatible verified donors got pinged
+- Donor signup form → inserts into `donors`, page refreshes the donor list immediately
+- Find-a-donor section → fetches real donors from DB, filter chips work
+- Donor cards show WhatsApp button (deep-links to `wa.me`) + Call button (`tel:` link)
+- Live counters in hero & impact section pull real `count(*)` from DB
 
 ---
 
@@ -46,16 +66,18 @@ If new files get added, Claude must update this table.
 
 Ordered by what would improve the product most:
 
-1. **Real backend** — donor signups + emergency requests currently vanish on refresh. Options discussed: Google Forms + Sheets (fastest), Supabase (recommended for real product), Firebase.
-2. **Donor matching logic** — right now filter is by exact blood group, not by compatibility chart. Should match recipients to compatible donors automatically.
-3. **Notifications** — when emergency request submitted, no real SMS/push goes out.
-4. **Auth / login** — no user accounts yet.
-5. **Map view** — donors shown as cards only; a map with pins would help locate nearby donors.
-6. **Admin dashboard** — no way to verify donor IDs, moderate requests, or see analytics.
-7. **Multi-language** — site is English only; Hindi/Hinglish would expand reach.
-8. **PWA / offline** — add manifest + service worker so it installs like an app.
-9. **Real photos / avatars** instead of initials.
-10. **SEO + Open Graph tags** for sharing.
+1. **Real SMS / push notifications** — emergency requests reach the DB but nobody is actually texted yet. Need Twilio (SMS) or OneSignal (push) wired via a Supabase Edge Function.
+2. **Auth / login for donors** — currently anyone can submit a donor profile under any name. Need email/phone OTP via Supabase Auth so only the real donor can update their own row.
+3. **Donor ID verification flow** — admin needs to flip `is_verified` after manual check. Right now everyone is auto-verified.
+4. **Admin dashboard** — moderate requests, verify donors, see analytics. Build a `/admin` route gated by Supabase Auth.
+5. **Map view** — donors shown as cards only; a Leaflet/Mapbox map with pins would help locate nearby donors.
+6. **Geo-radius matching** — currently no distance filter. Need `lat/lng` columns on donors + a haversine RPC in Postgres.
+7. **Anti-spam rate limit** — anyone can spam emergency_requests. Add IP-based rate limit via Edge Function or a `requests_per_hour` check.
+8. **Multi-language** — site is English only; Hindi/Hinglish would expand reach.
+9. **PWA / offline** — add manifest + service worker so it installs like an app.
+10. **Real photos / avatars** instead of initials.
+11. **SEO + Open Graph tags** for sharing.
+12. **90-day donation cooldown enforcement** — `last_donation_date` is in schema but never checked on availability.
 
 ---
 
@@ -75,7 +97,11 @@ Ordered by what would improve the product most:
 |---|---|---|
 | 2026-05-14 | Single-file HTML/CSS/JS instead of React/Next.js | User wanted instant preview, zero setup, runs anywhere |
 | 2026-05-14 | Dark theme with red accents | Conveys urgency + trust, premium feel |
-| 2026-05-14 | All forms front-end only at first | Faster to ship a working demo; backend is a separate decision |
+| 2026-05-14 | Supabase over Firebase | Postgres > NoSQL for relational donor/request data; generous free tier; simpler SQL; built-in REST API; realtime included |
+| 2026-05-14 | Use `sb_publishable_*` key in client | Newer Supabase publishable keys are designed for client-side use; safe when RLS is configured correctly |
+| 2026-05-14 | Public INSERT policy on `emergency_requests` and `donors` | MVP needs zero-friction signup; trade-off is spam vulnerability. Documented in backlog item #7 |
+| 2026-05-14 | Replaced en-dash (−) with hyphen (-) for blood groups | DB stored hyphens; keeping both formats would require normalization on every query |
+| 2026-05-14 | WhatsApp + Call buttons on donor cards instead of generic "Request" | India context — WhatsApp is the default messenger. Direct deep links are faster than a chat system that needs auth |
 
 ---
 
@@ -109,6 +135,7 @@ Every Claude session MUST follow this loop:
 | Date | Summary |
 |---|---|
 | 2026-05-14 | Initial build — full single-file site shipped. CLAUDE.md created. GitHub Pages deploy initiated. |
+| 2026-05-14 | Backend wired: Supabase project provisioned, 3 tables + RLS policies + seed data, frontend rewritten to use live DB, realtime donor updates, WhatsApp/Call deep links on cards. E2E tested live — emergency insert + donor signup both verified end-to-end. |
 
 ---
 
@@ -116,7 +143,8 @@ Every Claude session MUST follow this loop:
 
 _Auto-fixes Claude made without being explicitly asked. Each entry: what was broken, how it was fixed, lesson learned._
 
-_(empty — first session)_
+| 2026-05-14 | Discovered DB used hyphens (`A-`) but frontend used en-dashes (`A−`) — filter chips wouldn't match. Fixed by normalizing the whole frontend to hyphens. Lesson: pick one Unicode form for canonical data early and stick to it. |
+| 2026-05-14 | First OAuth authorize attempt (Supabase via GitHub) was denied — my JavaScript click triggered the wrong button. Fixed by retrying with a real coordinate-based click instead of dispatching events programmatically. Lesson: for OAuth flows, prefer real clicks over scripted ones; GitHub treats suspicious form submits as denials. |
 
 ---
 
