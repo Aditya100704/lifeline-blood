@@ -28,7 +28,8 @@
 
 | File | Role |
 |---|---|
-| `index.html` | Public website — markup, styles, and scripts all in one file |
+| `index.html` | Public homepage — hero with search bar, donor registration below hero, compatibility tool, FAQ |
+| `find.html` | Search results page — fetches donors matching `?group=X&location=Y`, falls back to compatibility chart if no exact matches |
 | `admin.html` | Admin dashboard (auth-gated) — view/edit/delete donors & requests, stats, CSV export, live activity feed |
 | `CLAUDE.md` | This file. Project memory + self-improvement log |
 | `README.md` | Public-facing project description for GitHub |
@@ -40,12 +41,15 @@ If new files get added, Claude must update this table.
 ## 3. What's Done
 
 **Frontend**
-- Sticky glass navbar with pulsing emergency button
-- Hero with animated heartbeat card, floating blood drops, live counters
+- Sticky glass navbar with pulsing emergency button (routes to `find.html`)
+- Hero with a real search bar (blood group + location → `find.html?group=X&location=Y`)
+- Donor registration form sits directly below the hero
+- Heartbeat card visual on hero right side
 - Interactive blood compatibility tool (all 8 groups mapped correctly)
 - How-it-works 3-step section
 - Animated impact stats (real DB counts)
 - Testimonials, FAQ accordion, footer with hotline
+- Separate `find.html` results page with its own search bar, exact-match results, compatibility-chart fallback when zero exact matches, "Available now only" toggle
 - Fully responsive (phone, tablet, laptop)
 - Hosted free on GitHub Pages, auto-deploys on push to `main`
 
@@ -57,9 +61,10 @@ If new files get added, Claude must update this table.
 - Realtime subscription on `donors` table — page updates without refresh when a new donor joins
 
 **Wired End-to-End (verified by E2E test 2026-05-14)**
-- Emergency request form → inserts into `emergency_requests`, success toast tells requester how many compatible verified donors got pinged
-- Donor signup form → inserts into `donors`, page refreshes the donor list immediately
-- Find-a-donor section → fetches real donors from DB, filter chips work
+- Hero search → routes to `find.html` with query params (verified end-to-end)
+- Find page → fetches matching donors with location and group filters
+- Compatibility fallback → when zero exact matches, shows donors who can give to that group (verified: AB+ Delhi → 3 compatible donors)
+- Donor signup form (below hero) → inserts into `donors` with city field, immediately searchable
 - Donor cards show WhatsApp button (deep-links to `wa.me`) + Call button (`tel:` link)
 - Live counters in hero & impact section pull real `count(*)` from DB
 
@@ -119,6 +124,9 @@ Ordered by what would improve the product most:
 | 2026-05-14 | Admin auth = Supabase Auth email/password, not magic links or OTP | Magic links require email delivery setup; password is simpler for a single-admin demo. Easy to swap later if multi-admin needed |
 | 2026-05-14 | Public still has INSERT, only auth'd users get UPDATE/DELETE | Lets the public site work without any login for normal use; only the admin who actually moderates needs an account |
 | 2026-05-14 | Admin link tucked in footer with low opacity | Discoverable for admin but not advertised to casual visitors |
+| 2026-05-14 | Killed the emergency request form, replaced with search | The original flow implied LifeLine would "ping all matching donors" — that was a lie, we have no SMS infra. Search-driven flow is honest: requester finds donors, reaches out directly via WhatsApp/call. Also removes spam vector on emergency_requests table |
+| 2026-05-14 | New donor row has `city` field populated now | The find.html search matches against both `college` and `city` (case-insensitive contains). Without city, donors only matched by college name |
+| 2026-05-14 | Compatibility fallback shown only when exact match returns zero | If we always show compatible donors, requester might bypass exact-match donors. Show fallback only when needed, with a clear banner |
 
 ---
 
@@ -154,6 +162,7 @@ Every Claude session MUST follow this loop:
 | 2026-05-14 | Initial build — full single-file site shipped. CLAUDE.md created. GitHub Pages deploy initiated. |
 | 2026-05-14 | Backend wired: Supabase project provisioned, 3 tables + RLS policies + seed data, frontend rewritten to use live DB, realtime donor updates, WhatsApp/Call deep links on cards. E2E tested live — emergency insert + donor signup both verified end-to-end. |
 | 2026-05-14 | Admin dashboard shipped: `admin.html` with Supabase Auth login, stats overview, blood group distribution, full CRUD on donors and requests, search + filters, CSV export, live activity feed. RLS updated to require authentication for UPDATE/DELETE. E2E tested — all admin writes confirmed hitting DB. |
+| 2026-05-14 | UX restructure: emergency form removed entirely (was confusing — implied mass notifications). Replaced with a hero search bar (group + location). Search routes to new `find.html` page that shows matching donors only, with compatibility-chart fallback if no exact match. Donor registration form moved directly below hero. Nav rewritten: "Emergency" button → `find.html`, "Sign In" → "List as Donor". E2E tested live — A+ in Delhi returns 1 donor (Priya Iyer), AB+ in Delhi returns 3 via compatibility fallback, donor signup with new city field persists correctly. |
 
 ---
 
